@@ -1,0 +1,147 @@
+# Draw It Or Lose It - Class Diagram (CS 230)
+
+## UML Class Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                            Entity                               │
+│  (Abstract Base Class)                                         │
+├─────────────────────────────────────────────────────────────────┤
+│  - _id: string                                                 │
+│  - _name: string                                               │
+│  - _createdAt: Date                                            │
+├─────────────────────────────────────────────────────────────────┤
+│  + getId(): string                                             │
+│  + getName(): string                                           │
+│  + getCreatedAt(): Date                                       │
+│  + updateName(newName: string): void                          │
+│  + getType(): string (abstract)                               │
+│  + toJSON(): object                                            │
+│  + equals(other: Entity): boolean                             │
+│  - _validateName(name: string): string                        │
+└─────────────────────────────────────────────────────────────────┘
+                                        │
+                                        │ (inheritance)
+                                        │
+                    ┌───────────────────┼───────────────────┐
+                    │                   │                   │
+                    ▼                   ▼                   ▼
+    ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐
+    │        Game        │  │        Team        │  │       Player       │
+    │                    │  │                    │  │                    │
+    ├─────────────────────┤  ├─────────────────────┤  ├─────────────────────┤
+    │  - _teams: Map      │  │  - _players: Map    │  │  - _teamId: string │
+    │  - _players: Map    │  │  - _score: number   │  │  - _score: number  │
+    │  - _gameState: str  │  │  - _color: string   │  │  - _isDrawing: bool│
+    │  - _currentRound: n │  │  - _isActive: bool  │  │  - _isReady: bool  │
+    │  - _maxRounds: n    │  │                    │  │  - _lastActivity: D│
+    │  - _currentWord: str│  │                    │  │                    │
+    │  - _currentDrawer: P│  │                    │  │                    │
+    │  - _gameSettings: o │  │                    │  │                    │
+    ├─────────────────────┤  ├─────────────────────┤  ├─────────────────────┤
+    │  + getTeams(): Team[]│  │  + getPlayers(): P[]│  │  + getTeamId(): str │
+    │  + getPlayers(): P[]│  │  + getPlayerCount():│  │  + getScore(): num  │
+    │  + getGameState(): s│  │  + getScore(): num  │  │  + isDrawing(): bool│
+    │  + startGame(): void│  │  + getColor(): str   │  │  + isReady(): bool  │
+    │  + pauseGame(): void│  │  + isActive(): bool  │  │  + joinTeam(id): void│
+    │  + endGame(): void  │  │  + addPlayer(p): void│  │  + leaveTeam(): void│
+    │  + nextRound(): void│  │  + removePlayer(id) │  │  + setDrawing(b): v │
+    │  + setCurrentWord() │  │  + getPlayer(id): P │  │  + setReady(b): void│
+    │  + createTeam(): T  │  │  + hasPlayer(id): b │  │  + addScore(p): void│
+    │  + removeTeam(id)   │  │  + addScore(p): void│  │  + resetScore(): v  │
+    │  + getTeam(id): T   │  │  + resetScore(): v  │  │  + isActive(): bool │
+    │  + addPlayer(): P   │  │  + setActive(b): v  │  │  + getStatus(): obj │
+    │  + removePlayer()  │  │  + isReady(): bool  │  │  + getType(): str   │
+    │  + getPlayer(id): P │  │  + getActivePlayers│  │  + toJSON(): obj    │
+    │  + getType(): str   │  │  + getSummary(): obj│  │                    │
+    │  + toJSON(): obj    │  │  + getType(): str   │  │                    │
+    │  + getSummary(): obj│  │  + toJSON(): obj    │  │                    │
+    │  + [Symbol.iterator]│  │  + [Symbol.iterator]│  │                    │
+    └─────────────────────┘  └─────────────────────┘  └─────────────────────┘
+                    │                   │                   │
+                    │                   │                   │
+                    │                   │                   │
+                    │                   │                   │
+                    ▼                   ▼                   ▼
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                    GameService (Singleton)                     │
+    ├─────────────────────────────────────────────────────────────────┤
+    │  - _currentGame: Game | null                                   │
+    │  - _gameHistory: Array                                         │
+    │  - _uniqueNames: Set                                           │
+    │  - _isInitialized: boolean                                     │
+    │  - _instance: GameService | null (static)                     │
+    ├─────────────────────────────────────────────────────────────────┤
+    │  + getInstance(): GameService (static)                        │
+    │  + initialize(): void                                          │
+    │  + createGame(name, options): Game                            │
+    │  + getCurrentGame(): Game | null                               │
+    │  + endCurrentGame(): Game | null                               │
+    │  + isNameUnique(name): boolean                                 │
+    │  + registerUniqueName(name): boolean                           │
+    │  + unregisterUniqueName(name): void                           │
+    │  + getStatistics(): object                                     │
+    │  + getGameHistory(): Array                                     │
+    │  + validateSingleton(): boolean                                │
+    │  - _reset(): void (private)                                    │
+    └─────────────────────────────────────────────────────────────────┘
+                    │
+                    │ (uses)
+                    ▼
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                    NameValidator                               │
+    │                    (Utility Class)                            │
+    ├─────────────────────────────────────────────────────────────────┤
+    │  - _reservedWords: Set                                          │
+    │  - _minLength: number                                          │
+    │  - _maxLength: number                                          │
+    ├─────────────────────────────────────────────────────────────────┤
+    │  + validateName(name, type): object                            │
+    │  + validateMultipleNames(names): object                         │
+    │  + areNamesEquivalent(name1, name2): boolean                  │
+    │  + generateUniqueName(baseName, existing): string               │
+    │  + getValidationRules(): object                               │
+    │  + setCustomRules(rules): void                                 │
+    └─────────────────────────────────────────────────────────────────┘
+```
+
+## Design Patterns Implementation
+
+### 1. Singleton Pattern
+- **Class**: GameService
+- **Implementation**: Private constructor, static getInstance() method
+- **Purpose**: Ensure only one game service instance exists
+- **CS 230 Requirement**: Single game instance management
+
+### 2. Iterator Pattern
+- **Classes**: Game, Team
+- **Implementation**: [Symbol.iterator]() method
+- **Purpose**: Traverse collections of teams and players
+- **CS 230 Requirement**: Data structure traversal
+
+### 3. Inheritance
+- **Base Class**: Entity (abstract)
+- **Derived Classes**: Game, Team, Player
+- **Benefits**: Code reuse, consistent interface, polymorphism
+
+### 4. Encapsulation
+- **Private Properties**: All use `_` prefix
+- **Public Methods**: Controlled access through getters/setters
+- **Benefits**: Data protection, controlled state modification
+
+## Key Relationships
+
+1. **GameService** → **Game**: One-to-one relationship (Singleton)
+2. **Game** → **Team**: One-to-many relationship
+3. **Game** → **Player**: One-to-many relationship
+4. **Team** → **Player**: One-to-many relationship
+5. **NameValidator** → **All Entities**: Utility for validation
+
+## CS 230 Requirements Fulfillment
+
+✅ **Singleton Pattern**: GameService ensures single game instance
+✅ **Iterator Pattern**: Game and Team classes implement iteration
+✅ **Inheritance**: Entity base class with Game, Team, Player inheritance
+✅ **Encapsulation**: Private properties with controlled access
+✅ **Unique Names**: NameValidator and GameService validation
+✅ **Cross-Platform**: Responsive design and real-time communication
