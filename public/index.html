@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw It Or Lose It - CS 230 Portfolio Project</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <h1 class="logo">🎨 Draw It Or Lose It</h1>
+                    <p class="subtitle">CS 230 Portfolio Project - Real-time Multiplayer Drawing Game</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Game State Display -->
+                <div id="gameState" class="game-state">
+                    <div class="state-info">
+                        <span id="currentGameName" class="game-name">No Active Game</span>
+                        <span id="gameStatus" class="game-status">Waiting for players</span>
+                    </div>
+                    <div class="game-stats">
+                        <div class="stat">
+                            <span class="stat-label">Teams:</span>
+                            <span id="teamCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Players:</span>
+                            <span id="playerCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Round:</span>
+                            <span id="currentRound" class="stat-value">0/10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Creation Section -->
+                <div id="gameCreation" class="game-creation">
+                    <div class="card">
+                        <h2>Create New Game</h2>
+                        <form id="createGameForm" class="form">
+                            <div class="form-group">
+                                <label for="gameName">Game Name</label>
+                                <input type="text" id="gameName" name="gameName" placeholder="Enter unique game name" required>
+                                <small class="form-help">Game name must be unique and 2-50 characters</small>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="maxTeams">Max Teams</label>
+                                    <select id="maxTeams" name="maxTeams">
+                                        <option value="2">2 Teams</option>
+                                        <option value="3">3 Teams</option>
+                                        <option value="4" selected>4 Teams</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="maxPlayers">Max Players per Team</label>
+                                    <select id="maxPlayers" name="maxPlayers">
+                                        <option value="4">4 Players</option>
+                                        <option value="6" selected>6 Players</option>
+                                        <option value="8">8 Players</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Game</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Team Management Section -->
+                <div id="teamManagement" class="team-management" style="display: none;">
+                    <div class="card">
+                        <h2>Team Management</h2>
+                        <div class="teams-container" id="teamsContainer">
+                            <!-- Teams will be dynamically added here -->
+                        </div>
+                        <button id="addTeamBtn" class="btn btn-secondary">Add Team</button>
+                    </div>
+                </div>
+
+                <!-- Player Management Section -->
+                <div id="playerManagement" class="player-management" style="display: none;">
+                    <div class="card">
+                        <h2>Player Management</h2>
+                        <div class="players-container" id="playersContainer">
+                            <!-- Players will be dynamically added here -->
+                        </div>
+                        <button id="addPlayerBtn" class="btn btn-secondary">Add Player</button>
+                    </div>
+                </div>
+
+                <!-- Game Canvas Section -->
+                <div id="gameCanvas" class="game-canvas" style="display: none;">
+                    <div class="card">
+                        <h2>Drawing Canvas</h2>
+                        <div class="canvas-container">
+                            <canvas id="drawingCanvas" width="800" height="600"></canvas>
+                            <div class="canvas-controls">
+                                <div class="color-palette">
+                                    <button class="color-btn" data-color="#000000" style="background-color: #000000;"></button>
+                                    <button class="color-btn" data-color="#FF0000" style="background-color: #FF0000;"></button>
+                                    <button class="color-btn" data-color="#00FF00" style="background-color: #00FF00;"></button>
+                                    <button class="color-btn" data-color="#0000FF" style="background-color: #0000FF;"></button>
+                                    <button class="color-btn" data-color="#FFFF00" style="background-color: #FFFF00;"></button>
+                                    <button class="color-btn" data-color="#FF00FF" style="background-color: #FF00FF;"></button>
+                                    <button class="color-btn" data-color="#00FFFF" style="background-color: #00FFFF;"></button>
+                                    <button class="color-btn" data-color="#FFFFFF" style="background-color: #FFFFFF; border: 1px solid #ccc;"></button>
+                                </div>
+                                <div class="brush-controls">
+                                    <label for="brushSize">Brush Size:</label>
+                                    <input type="range" id="brushSize" min="1" max="20" value="3">
+                                    <span id="brushSizeValue">3</span>
+                                </div>
+                                <div class="canvas-actions">
+                                    <button id="clearCanvas" class="btn btn-warning">Clear Canvas</button>
+                                    <button id="undoLast" class="btn btn-secondary">Undo</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Controls Section -->
+                <div id="gameControls" class="game-controls" style="display: none;">
+                    <div class="card">
+                        <h2>Game Controls</h2>
+                        <div class="controls-grid">
+                            <button id="startGameBtn" class="btn btn-success">Start Game</button>
+                            <button id="pauseGameBtn" class="btn btn-warning">Pause Game</button>
+                            <button id="endGameBtn" class="btn btn-danger">End Game</button>
+                            <button id="nextRoundBtn" class="btn btn-primary">Next Round</button>
+                        </div>
+                        <div class="current-word-display" id="currentWordDisplay" style="display: none;">
+                            <h3>Current Word: <span id="currentWord"></span></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Statistics Section -->
+                <div id="gameStats" class="game-stats" style="display: none;">
+                    <div class="card">
+                        <h2>Game Statistics</h2>
+                        <div class="stats-grid" id="statsGrid">
+                            <!-- Statistics will be dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2024 CS 230 Portfolio Project - Draw It Or Lose It</p>
+                <p>Demonstrating Singleton Pattern, OOP Principles, and Real-time Multiplayer Game Development</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="teamModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Team</h2>
+            <form id="teamForm">
+                <div class="form-group">
+                    <label for="teamName">Team Name</label>
+                    <input type="text" id="teamName" name="teamName" placeholder="Enter team name" required>
+                </div>
+                <div class="form-group">
+                    <label for="teamColor">Team Color</label>
+                    <input type="color" id="teamColor" name="teamColor" value="#4ECDC4">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Team</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Player</h2>
+            <form id="playerForm">
+                <div class="form-group">
+                    <label for="playerName">Player Name</label>
+                    <input type="text" id="playerName" name="playerName" placeholder="Enter player name" required>
+                </div>
+                <div class="form-group">
+                    <label for="playerTeam">Assign to Team</label>
+                    <select id="playerTeam" name="playerTeam">
+                        <option value="">Select a team</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Player</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/game.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
